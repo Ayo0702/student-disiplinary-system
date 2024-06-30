@@ -13,11 +13,13 @@ class User(AbstractUser):
         max_length=255,
         unique=True,
     )
-    # notice the absence of a "Password field", that is built in.
+    username = None
+    is_security = models.BooleanField(default=False)
+    is_senate = models.BooleanField(default=False)
+    is_sdc = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username'] # Email & Password are required by default.
-
+    REQUIRED_FIELDS = [] 
     objects = CustomUserManager()
 
     def __str__(self):

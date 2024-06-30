@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # add app
     'accounts',
+    'offense'
 ]
 
 MIDDLEWARE = [

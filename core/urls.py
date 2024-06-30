@@ -16,9 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from offense import views as offense_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('accounts/', include('accounts.urls'))
+    path('', include('accounts.urls')),
+    path('', include('django.contrib.auth.urls')),
+    
+    # #TODO delete this later
+    path('', offense_views.home, name='home'),
+
+    path('statement/', offense_views.statement, name="statement")
 ]
