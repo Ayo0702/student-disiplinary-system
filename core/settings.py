@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-b7^0n0$^^8^l3^)hhp+6_@qb1$2k%xjv0hoa_l8jf%zsjp&g^b
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["student-disiplinary-system.onrender.com"]
 AUTH_USER_MODEL = 'accounts.User'
 LOGIN_URL = '/login'
 
@@ -125,6 +125,9 @@ STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
