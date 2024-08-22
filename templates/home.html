@@ -2,16 +2,17 @@
 
 <main>
   <div class="container-fluid px-4">
-    <h1 class="mt-4">Dashboard</h1>
     <ol class="breadcrumb mb-4">
-      <li class="breadcrumb-item active">Dashboard</li>
     </ol>
     <div class="row">
-      <div class="col-xl-3 col-md-6">
-        <div class="card bg-primary text-white mb-4">
+      <div class="col-xl-2 col-md-6">
+        <h1 class="mt-4">Dashboard</h1>
+        <div class="card bg-success text-white mb-4">
           <div class="card-body">
-            <h6 class="card-subtitle mb-2">Primary Card</h6>
-            <p>2</p>
+            <h6 class="card-subtitle mb-2">Pending</h6>
+            <div class="d-flex justify-content-end">
+                <p> {{ data | length }}</p>
+            </div>  
           </div>
         </div>
       </div>
@@ -58,42 +59,150 @@
       {% endcomment %}
     </div>
 
-    <div class="card mb-4">
-      <div class="card-header">
-        <i class="fas fa-table me-1"></i>
-        DataTable Example
+    <div class="container mt-5">
+      <h2 class="mb-4">Offenses </h2>
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Matric Number</th>
+            <th scope="col">Level</th>
+            <th scope="col">Status</th>
+            <th scope="col">Date</th>
+            <th scope="col">Date_update</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {% for item in data %}
+          {{ item.notes }}
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.student.matric_no }}</td>
+            <td>{{ item.student.level }}</td>
+            <td>{{ item.status }}</td>
+            <td>{{ item.created_at }}</td>
+            <td>{{ item.updated_at }}</td>
+            <td>
+              <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#statement" data-bs-offenseid="{{item.id}}" data-bs-statement="{{item.statement}}" data-bs-recommendation="{{item.recommendation}}" data-bs-recommendation="{{item.notes}}" >
+                View
+              </button>
+              <!-- use url_for -->
+               {% if request.user.is_senate  %}
+              <a href="{% url 'senate_offense' item.id %}" class="btn btn-success">Update Offense</a>
+              {% elif request.user.is_sdc %}
+              <a href="{% url 'sdc_offense' item.id %}" class="btn btn-success">Update Offense</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+
+      <br/> <br/>
+
+      {% if resolved_offenses %}
+      <h2 class="mb-4">Resolved Offenses </h2>
+      <table class="table table-bordered">
+        <thead class="thead-light">
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Matric Number</th>
+            <th scope="col">Level</th>
+            <th scope="col">Status</th>
+            <th scope="col">Date</th>
+            <th scope="col">Date_update</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in resolved_offenses %}
+          <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.student.matric_no }}</td>
+            <td>{{ item.student.level }}</td>
+            <td>{{ item.status }}</td>
+            <td>{{ item.created_at }}</td>
+            <td>{{ item.updated_at }}</td>
+            <td>
+              <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#statement" data-bs-offenseid="{{item.id}}" data-bs-statement="{{item.statement}}" data-bs-recommendation="{{item.recommendation}}" data-bs-conclusion="{{ item.conclusion }}" >
+                View
+              </button>
+              <!-- use url_for -->
+               {% if request.user.is_senate and item.status == "REPORT_WRITTEN" %}
+              <a href="{% url 'senate_offense' item.id %}" class="btn btn-success">Update Offense</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+    </div>
+
+<!-- Modal for statement-->
+<div class="modal fade" id="statement" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Offense Action</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="card-body">
-        <table id="datatablesSimple">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Position</th>
-              <th>Office</th>
-              <th>Age</th>
-              <th>Start date</th>
-              <th>Salary</th>
-            </tr>
-          </thead>
-          <tfoot>
-            <tr>
-              <th>Name</th>
-              <th>Position</th>
-              <th>Office</th>
-              <th>Age</th>
-              <th>Start date</th>
-              <th>Salary</th>
-            </tr>
-          </tfoot>
-          <tbody></tbody>
-        </table>
+      <div class="modal-body">
+        <span class="statement"></span> <br/>
+        <span class="recommendation"></span> <br/>
+        <span class="conclusion"></span>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
+</div>
+
+
+    
 </main>
 
-{% endblock main %} {% block script %}
 <script>
+const exampleModal = document.getElementById('statement')
+exampleModal.addEventListener('show.bs.modal', event => {
+
+  // Button that triggered the modal
+  const button = event.relatedTarget
+  // Extract info from data-bs-* attributes
+  const statement = button.getAttribute('data-bs-statement')
+  const recommendation = button.getAttribute('data-bs-recommendation')
+  const conclusion = button.getAttribute('data-bs-conclusion')
+
+  // If necessary, you could initiate an AJAX request here
+  // and then do the updating in a callback.
+  // Update the modal's content.
+  const modalStatement = exampleModal.querySelector('.modal-body .statement')
+  const modalRecommendation = exampleModal.querySelector('.modal-body .recommendation')
+  const modalConclusion = exampleModal.querySelector('.modal-body .conclusion')
+
+  modalStatement.innerHTML = `STATEMENT: ${statement}`
+  if (recommendation){
+    modalRecommendation.innerHTML = `RECOMMENDATION: ${recommendation}`
+  }
+  else{
+    modalRecommendation.innerHTML = ""
+  }
+  if (conclusion){
+    modalConclusion.innerHTML = `CONCLUSION: ${conclusion}`
+  }
+  else{
+    modalConclusion.innerHTML = ""
+  }
+
+})
+</script>
+
+
+{% endblock main %} {% block script %}
+<!-- <script>
   window.addEventListener("DOMContentLoaded", (event) => {
     var all = "{{ context.data | safe }}";
 
@@ -114,5 +223,5 @@
       alert(data[0] + "'s salary is: " + data[5]);
     });
   });
-</script>
+</script> -->
 {% endblock script %}

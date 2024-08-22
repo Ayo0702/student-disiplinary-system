@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout 
 from .forms import SignupForm, LoginForm
 from .models import User
+from django.views.decorators.cache import never_cache
 
 
 # Create your views here.
@@ -41,3 +42,8 @@ def user_login(request):
     else:
         form = LoginForm()
     return render(request, 'registration/login.html', {'form': form})
+
+# @never_cache
+def logout_view(request):
+    logout(request)
+    return redirect('login')

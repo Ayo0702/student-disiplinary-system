@@ -13,10 +13,10 @@ class CustomUserAdmin(UserAdmin):
     model = User
 
     list_display = ('email', 'is_active',
-                    'is_staff', 'is_superuser', 'last_login', 'is_security')
-    list_filter = ('is_active', 'is_staff', 'is_superuser')
+                    'is_staff', 'is_superuser','is_security','is_sdc',  'is_senate', 'last_login',  )
+    list_filter = ('is_active', 'is_staff', 'is_superuser', 'is_security','is_sdc',  'is_senate',)
     fieldsets = (
-        (None, {'fields': ('email', 'password')}),
+        (None, {'fields': ('email', 'password', 'is_security','is_sdc',  'is_senate')}),
         ('Permissions', {'fields': ('is_staff', 'is_active',
          'is_superuser', 'groups', 'user_permissions')}),
         ('Dates', {'fields': ('last_login', 'date_joined')})
@@ -24,7 +24,7 @@ class CustomUserAdmin(UserAdmin):
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('email', 'password1', 'password2', 'is_staff', 'is_active')}
+            'fields': ('email', 'password1', 'password2', 'is_staff', 'is_active', 'is_security', 'is_sdc', 'is_senate')}
          ),
     )
     search_fields = ('email',)
